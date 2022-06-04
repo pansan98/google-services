@@ -6,6 +6,15 @@ let body_weight = {
 	end: 45
 }
 
+const setTrigger = () => {
+	// 実行日時を指定する
+	const trigger = new Date();
+	trigger.setHours(19);
+	trigger.setMinutes(55);
+
+	ScriptApp.newTrigger('notify').timeBased().at(trigger).create();
+}
+
 const notify = () => {
 	if(check()) {
 		const calendar = CalendarApp.getAllCalendars();
@@ -51,7 +60,7 @@ const message = (schedule) => {
 }
 
 const push = (message) => {
-	const token = 'YOUR LINE NOTIFY TOKEN';
+	//const token = 'YOUR LINE NOTIFY TOKEN';
 	const options = {
 		"method": "POST",
 		"headers": {
@@ -74,3 +83,5 @@ const check = () => {
 
 	return false;
 }
+
+// TODO ゴミトリガーを消す
