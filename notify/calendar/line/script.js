@@ -12,10 +12,9 @@ const notify = () => {
 		const my_schedule = schedule(calendar);
 		if(my_schedule) {
 			const push_message = message(my_schedule);
-			console.log(push_message);
 			push(push_message);
 		}
-  }
+	}
 }
 
 const schedule = (calendars, date, one = true) => {
