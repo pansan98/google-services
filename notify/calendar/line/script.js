@@ -2,9 +2,10 @@ let before_time = 5;
 let start = '2022-06-03';
 let end = '2022-07-31';
 let body_weight = {
-	start: 54.6,
+	start: 56.4,
 	end: 45
 }
+let interval_day = 4;
 
 const setTrigger = () => {
 	// 実行日時を指定する
@@ -16,7 +17,9 @@ const setTrigger = () => {
 }
 
 const notify = () => {
-	if(check()) {
+	let _check = check();
+	let _close = closing_day();
+	if(_check && !_close) {
 		const calendar = CalendarApp.getAllCalendars();
 		const my_schedule = schedule(calendar);
 		if(my_schedule) {
@@ -56,11 +59,15 @@ const message = (schedule) => {
 	let message = '';
 	message += schedule.title + 'の時間';
 
+	let [weight, day] = current_weight();
+	message += "\n" + day + '日目';
+	message += "\n現在の体重:" + weight + 'kg';
+
 	return message;
 }
 
 const push = (message) => {
-	//const token = 'YOUR LINE NOTIFY TOKEN';
+	const token = 'YOUR LINE NOTIFY TOKEN';
 	const options = {
 		"method": "POST",
 		"headers": {
@@ -82,6 +89,43 @@ const check = () => {
 	}
 
 	return false;
+}
+
+const current_weight = () => {
+	let start_date = new Date(start);
+	let end_date = new Date(end);
+	let now = new Date();
+
+	let _need_mns = Math.round((body_weight.start - body_weight.end) * 10) / 10;
+
+	let _total_d = Math.floor(((end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 / 24));
+	let _remain_d = Math.floor(((end_date.getTime() - now.getTime()) / 1000 / 60 / 60 / 24));
+	let _progress_d = _total_d - _remain_d;
+
+	let _range = Math.floor(((_progress_d / _total_d) * 100) * 10) / 10;
+	let _mns = Math.floor(((_range / 100) * _need_mns) * 10) / 10;
+	let _current = body_weight.start - _mns;
+
+	return [_current, _progress_d];
+}
+
+const closing_day = () => {
+	let start_date = new Date(start);
+	let end_date = new Date(end);
+	let now = new Date();
+
+	let _total_d = Math.floor(((end_date.getTime() - start_date.getTime()) / 1000 / 60 / 60 / 24));
+	let _remain_d = Math.floor(((end_date.getTime() - now.getTime()) / 1000 / 60 / 60 / 24));
+	let _progress_d = _total_d - _remain_d;
+
+	let interval_days = [];
+	let i = interval_day;
+	while(i < _total_d) {
+		interval_days.push(i);
+		i += interval_day;
+	}
+
+	return interval_days.includes(_progress_d);
 }
 
 // TODO ゴミトリガーを消す
