@@ -14,6 +14,21 @@ const setTrigger = () => {
 	trigger.setMinutes(55);
 
 	ScriptApp.newTrigger('notify').timeBased().at(trigger).create();
+
+	const snack = new Date();
+	snack.setHours(09);
+	snack.setMinutes(00);
+
+	ScriptApp.newTrigger('snack_notify').timeBased().at(snack).create();
+}
+
+const snack_notify = () => {
+	const now = new Date();
+	const week = now.getDay();
+	if(week === 1 || week === 3 || week === 5) {
+		let message = "\n" + 'おかしの日';
+		push(message);
+	}
 }
 
 const notify = () => {
